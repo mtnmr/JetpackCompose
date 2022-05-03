@@ -9,6 +9,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
@@ -24,18 +27,58 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-
+            LayoutsCodelabTheme {
+                LayoutCodelab()
+            }
         }
     }
 }
 
 @Composable
-fun PhotographerCard(modifier: Modifier = Modifier){
+fun LayoutCodelab() {
+    Scaffold (
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(text = "LayoutsCodelab")
+                },
+                actions ={
+                    IconButton(onClick = { /*TODO*/ }) {
+                        Icon(Icons.Filled.FavoriteBorder,
+                            contentDescription = null)
+                    }
+                }
+            )
+        }
+    ){ innerPadding ->
+        BodyContent(Modifier.padding(innerPadding))
+    }
+}
+
+@Composable
+fun BodyContent(modifier: Modifier = Modifier){
+    Column(modifier = modifier) {
+        Text(text = "Hi there!")
+        Text(text = "Thanks for going through the Layouts codelab")
+    }
+}
+
+
+@Preview
+@Composable
+fun LayoutCodelabPreview() {
+    LayoutsCodelabTheme {
+        LayoutCodelab()
+    }
+}
+
+@Composable
+fun PhotographerCard(modifier: Modifier = Modifier) {
     Row(modifier
         .padding(8.dp)
         .clip(RoundedCornerShape(4.dp))
         .background(MaterialTheme.colors.surface)
-        .clickable {  }
+        .clickable { }
         .padding(16.dp)
     ) {
         Surface(
@@ -47,7 +90,8 @@ fun PhotographerCard(modifier: Modifier = Modifier){
         }
 
         Column(
-            modifier = Modifier.padding(start = 8.dp)
+            modifier = Modifier
+                .padding(start = 8.dp)
                 .align(CenterVertically)
         ) {
             Text(text = "Alfred Sisley", fontWeight = FontWeight.Bold)
@@ -59,9 +103,9 @@ fun PhotographerCard(modifier: Modifier = Modifier){
     }
 }
 
-@Preview
+//@Preview
 @Composable
-fun PhotographerCardPreview(){
+fun PhotographerCardPreview() {
     LayoutsCodelabTheme {
         PhotographerCard()
     }

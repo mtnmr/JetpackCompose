@@ -1,6 +1,7 @@
 package com.example.layoutscodelab
 
 import android.os.Bundle
+import android.speech.tts.TextToSpeech
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.*
@@ -21,14 +22,14 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.AlignmentLine
-import androidx.compose.ui.layout.FirstBaseline
-import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.layout.layout
+import androidx.compose.ui.layout.*
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.ConstraintSet
+import androidx.constraintlayout.compose.Dimension
 import coil.compose.rememberImagePainter
 import com.example.layoutscodelab.ui.theme.LayoutsCodelabTheme
 import kotlinx.coroutines.launch
@@ -74,6 +75,133 @@ fun LayoutCodelabPreview() {
         LayoutCodelab()
     }
 }
+
+//constraintLayout Apiの分離
+private fun decoupledConstraints(margin: Dp): ConstraintSet{
+    return ConstraintSet{
+        val button = createRefFor("button")
+        val text = createRefFor("text")
+
+        constrain(button){
+            top.linkTo(parent.top, margin = margin)
+        }
+        constrain(text){
+            top.linkTo(button.bottom, margin = margin)
+        }
+    }
+}
+
+@Composable
+fun DecoupledConstraintLayout(){
+    BoxWithConstraints {
+        val constraints = if (maxWidth < maxHeight){
+            decoupledConstraints(margin = 16.dp)
+        }else{
+            decoupledConstraints(margin = 32.dp)
+        }
+
+        ConstraintLayout(constraints){
+            Button(
+                onClick = { /*TODO*/ },
+                modifier = Modifier.layoutId("button")
+            ) {
+                Text(text = "Button")
+            }
+
+            Text(text = "Text", Modifier.layoutId("text"))
+        }
+    }
+}
+
+
+@Composable
+fun LargeConstraintLayout(){
+    ConstraintLayout{
+        val text = createRef()
+
+        val guideline = createGuidelineFromStart(fraction = 0.5f)
+        Text(
+            text = "This is a very very very very very very very long text",
+            Modifier.constrainAs(text){
+                linkTo(start = guideline, end = parent.end)
+                width = Dimension.preferredWrapContent
+            }
+        )
+    }
+}
+
+@Preview
+@Composable
+fun LargeConstraintLayoutPreview() {
+    LayoutsCodelabTheme {
+        LargeConstraintLayout()
+    }
+}
+
+
+
+
+@Composable
+fun ConstraintLayoutContent(){
+    ConstraintLayout {
+
+//        val (button, text) = createRefs()
+//
+//        Button(
+//            onClick = { /*TODO*/ },
+//            modifier = Modifier.constrainAs(button){
+//                top.linkTo(parent.top, margin = 16.dp)
+//            }
+//        ) {
+//            Text(text = "Button")
+//        }
+//
+//        Text(text = "text",
+//        modifier = Modifier.constrainAs(text){
+//            top.linkTo(button.bottom, margin = 16.dp)
+//            centerHorizontallyTo(parent)
+//        })
+
+        val (button1, button2, text) = createRefs()
+
+        Button(
+            onClick = {},
+            modifier = Modifier.constrainAs(button1){
+                top.linkTo(parent.top, margin = 16.dp)
+            }
+        ){
+            Text(text = "button1")
+        }
+
+        Text(text = "text",
+        modifier = Modifier.constrainAs(text){
+            top.linkTo(button1.bottom, margin = 16.dp)
+            centerAround(button1.end)
+        })
+
+        val barrier = createEndBarrier(button1, text)
+
+        Button(
+            onClick = { /*TODO*/ },
+            modifier = Modifier.constrainAs(button2){
+                top.linkTo(parent.top, margin = 16.dp)
+                start.linkTo(barrier)
+            }
+        ) {
+            Text(text = "button2")
+        }
+    }
+}
+
+//@Preview
+@Composable
+fun ConstraintLayoutContentPreview(){
+    LayoutsCodelabTheme {
+        ConstraintLayoutContent()
+    }
+}
+
+
 
 @Composable
 fun StaggeredGrid(
@@ -141,7 +269,7 @@ fun Chip(modifier: Modifier = Modifier, text : String){
     }
 }
 
-@Preview
+//@Preview
 @Composable
 fun ChipPreview(){
     LayoutsCodelabTheme() {
@@ -159,13 +287,20 @@ val topics = listOf(
 
 @Composable
 fun BodyContent(modifier: Modifier = Modifier){
-    Row(modifier = modifier.horizontalScroll(rememberScrollState())) {
-        StaggeredGrid() {
-            for (topic in topics){
-                Chip(modifier = Modifier.padding(8.dp), text = topic)
+    Row(modifier = modifier
+        .background(color = Color.Gray)
+        .padding(16.dp)
+        .size(200.dp)
+        .horizontalScroll(rememberScrollState()),
+        content = {
+            StaggeredGrid() {
+                for (topic in topics){
+                    Chip(modifier = Modifier.padding(8.dp), text = topic)
+                }
             }
         }
-    }
+    )
+}
     
     
 //    StaggeredGrid(modifier = modifier, rows = 5) {
@@ -180,7 +315,6 @@ fun BodyContent(modifier: Modifier = Modifier){
 //        Text("vertically.")
 //        Text("We've done it by hand!")
 //    }
-}
 
 //レイアウトコンポーザブルLayout
 @Composable

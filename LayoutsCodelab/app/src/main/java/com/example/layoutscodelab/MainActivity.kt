@@ -33,6 +33,7 @@ import androidx.constraintlayout.compose.Dimension
 import coil.compose.rememberImagePainter
 import com.example.layoutscodelab.ui.theme.LayoutsCodelabTheme
 import kotlinx.coroutines.launch
+import java.sql.Driver
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,6 +76,44 @@ fun LayoutCodelabPreview() {
         LayoutCodelab()
     }
 }
+
+
+//Intrinsic の動作
+@Composable
+fun TwoTexts(modifier: Modifier = Modifier, text1:String, text2:String){
+    Row(modifier = modifier.height(intrinsicSize = IntrinsicSize.Min)) {
+        Text(
+            text = text1,
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 4.dp)
+                .wrapContentWidth(Alignment.Start)
+        )
+
+        Divider(color = Color.Black, modifier = Modifier
+            .fillMaxHeight()
+            .width(1.dp))
+
+        Text(
+            text = text2,
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 4.dp)
+                .wrapContentWidth(Alignment.End)
+        )
+    }
+}
+
+@Preview
+@Composable
+fun TwoTextsPreview(){
+    MaterialTheme{
+        Surface {
+            TwoTexts(text1 = "Hi", text2 = "there")
+        }
+    }
+}
+
 
 //constraintLayout Apiの分離
 private fun decoupledConstraints(margin: Dp): ConstraintSet{
@@ -130,7 +169,7 @@ fun LargeConstraintLayout(){
     }
 }
 
-@Preview
+//@Preview
 @Composable
 fun LargeConstraintLayoutPreview() {
     LayoutsCodelabTheme {
@@ -182,7 +221,7 @@ fun ConstraintLayoutContent(){
         val barrier = createEndBarrier(button1, text)
 
         Button(
-            onClick = { /*TODO*/ },
+            onClick = {  },
             modifier = Modifier.constrainAs(button2){
                 top.linkTo(parent.top, margin = 16.dp)
                 start.linkTo(barrier)

@@ -13,9 +13,9 @@ class TodoViewModel:ViewModel() {
 
 
     fun changeIsChecked(item:TodoItem, checked: Boolean){
-        todoList.find { it.id == item.id }?.let {
-            it.isChecked = checked
-        }
+        val position = todoList.indexOf(item)
+        val newItem = TodoItem(id = item.id, todoText = item.todoText, isChecked = checked)
+        _todoList[position] = newItem
     }
 
     fun deleteItem(item: TodoItem){

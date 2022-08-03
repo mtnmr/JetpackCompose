@@ -21,17 +21,25 @@ import com.example.todoapp.data.TodoItem
 import com.example.todoapp.ui.theme.ToDoAppTheme
 
 @Composable
-fun MainScreen(viewModel: TodoViewModel = viewModel()){
+fun MainScreen(viewModel: TodoViewModel){
     Column {
-        AddTodoScreen(viewModel)
+        AddTodoScreen(
+            onclick = { text -> viewModel.addItem(text)}
+        )
 
-        TodoScreen(viewModel)
+        TodoScreen(
+            list = viewModel.todoList,
+            checkedChange = { item, checked -> viewModel.changeIsChecked(item, checked)},
+            deleteClicked = {item -> viewModel.deleteItem(item)}
+        )
     }
 }
 
 
 @Composable
-fun AddTodoScreen(viewModel: TodoViewModel){
+fun AddTodoScreen(
+    onclick:(String) -> Unit
+){
     var text by remember { mutableStateOf("")}
 
     Row(modifier = Modifier.padding(8.dp)) {
@@ -46,7 +54,7 @@ fun AddTodoScreen(viewModel: TodoViewModel){
 
         Button(
             onClick = {
-                viewModel.addItem(text)
+                onclick(text)
                 text = "" },
             modifier = Modifier.align(CenterVertically)
         ) {
@@ -60,20 +68,24 @@ fun AddTodoScreen(viewModel: TodoViewModel){
 @Composable
 fun AddTodoScreenPreview(){
     Surface(color = Color.White) {
-        AddTodoScreen(TodoViewModel())
+        AddTodoScreen(onclick = {})
     }
 }
 
 //item keyをidに変更予定
 @Composable
-fun TodoScreen(viewModel: TodoViewModel) {
+fun TodoScreen(
+    list:List<TodoItem>,
+    checkedChange: (TodoItem, Boolean) -> Unit,
+    deleteClicked: (TodoItem) -> Unit
+) {
     LazyColumn(){
-        items(items = viewModel.todoList, key = {item -> item.todoText }){ item ->
+        items(items = list, key = {item -> item.todoText }){ item ->
             TodoItemView(
                 todoText = item.todoText,
                 todoChecked = item.isChecked,
-                checkedChange = { checked -> viewModel.changeIsChecked(item, checked) },
-                deleteClicked = { viewModel.deleteItem(item) }
+                checkedChange = { checked -> checkedChange(item, checked) },
+                deleteClicked = { deleteClicked(item) }
             )
         }
     }
@@ -86,23 +98,28 @@ fun TodoItemView(
     checkedChange: (Boolean) -> Unit,
     deleteClicked: () -> Unit
 ){
-    Row(
-        verticalAlignment = Alignment.CenterVertically
+    Card(
+        modifier = Modifier.padding(4.dp),
+        elevation = 4.dp
     ) {
-        Checkbox(
-            checked = todoChecked,
-            onCheckedChange = checkedChange
-        )
-        
-        Text(
-            text = todoText,
-            modifier = Modifier.weight(1f)
-        )
-
-        IconButton(
-            onClick = deleteClicked
+        Row(
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(Icons.Filled.Delete, contentDescription = "item delete")
+            Checkbox(
+                checked = todoChecked,
+                onCheckedChange = checkedChange
+            )
+
+            Text(
+                text = todoText,
+                modifier = Modifier.weight(1f)
+            )
+
+            IconButton(
+                onClick = deleteClicked
+            ) {
+                Icon(Icons.Filled.Delete, contentDescription = "item delete")
+            }
         }
     }
 }
@@ -111,6 +128,10 @@ fun TodoItemView(
 @Composable
 fun TodoItemPreview(){
     Surface(color = Color.White) {
-        MainScreen()
+        TodoScreen(
+            list = getSampleList(),
+            checkedChange = {todoItem, b ->  },
+            deleteClicked = {}
+        )
     }
 }

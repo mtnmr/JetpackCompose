@@ -1,7 +1,9 @@
 package com.example.todoapp
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.LayoutScopeMarker
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
@@ -9,17 +11,64 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.todoapp.data.TodoItem
 import com.example.todoapp.ui.theme.ToDoAppTheme
 
 @Composable
-fun TodoScreen(viewModel: TodoViewModel = viewModel()) {
+fun MainScreen(viewModel: TodoViewModel = viewModel()){
+    Column {
+        AddTodoScreen(viewModel)
+
+        TodoScreen(viewModel)
+    }
+}
+
+
+@Composable
+fun AddTodoScreen(viewModel: TodoViewModel){
+    var text by remember { mutableStateOf("")}
+
+    Row(modifier = Modifier.padding(8.dp)) {
+        TextField(
+            value = text,
+            onValueChange = {text = it },
+            label = { Text(text = "ToDo") },
+            modifier = Modifier
+                .weight(1f)
+                .padding(8.dp)
+        )
+
+        Button(
+            onClick = {
+                viewModel.addItem(text)
+                text = "" },
+            modifier = Modifier.align(CenterVertically)
+        ) {
+            Text(text = "Add")
+        }
+        
+    }
+}
+
+@Preview
+@Composable
+fun AddTodoScreenPreview(){
+    Surface(color = Color.White) {
+        AddTodoScreen(TodoViewModel())
+    }
+}
+
+//item keyをidに変更予定
+@Composable
+fun TodoScreen(viewModel: TodoViewModel) {
     LazyColumn(){
-        items(items = viewModel.todoList, key = {item -> item.id }){ item ->
+        items(items = viewModel.todoList, key = {item -> item.todoText }){ item ->
             TodoItemView(
                 todoText = item.todoText,
                 todoChecked = item.isChecked,
@@ -62,6 +111,6 @@ fun TodoItemView(
 @Composable
 fun TodoItemPreview(){
     Surface(color = Color.White) {
-        TodoScreen()
+        MainScreen()
     }
 }

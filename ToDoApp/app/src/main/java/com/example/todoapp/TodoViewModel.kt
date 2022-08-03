@@ -2,33 +2,42 @@ package com.example.todoapp
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.toMutableStateList
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.*
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.todoapp.data.TodoItem
 import com.example.todoapp.data.TodoRepository
+import kotlinx.coroutines.launch
 
 class TodoViewModel(private val repository: TodoRepository):ViewModel() {
+    /*
     private var _todoList = mutableStateListOf<TodoItem>()
 //    private var _todoList = getSampleList().toMutableStateList()
     val todoList:List<TodoItem>
         get() = _todoList
 
+     */
+
+    val todoList :LiveData<List<TodoItem>> = repository.getTodoItems().asLiveData()
+
 
     fun changeIsChecked(item:TodoItem, checked: Boolean){
-//        val position = todoList.indexOf(item)
-//        val newItem = TodoItem(todoText = item.todoText, isChecked = checked)
-//        _todoList[position] = newItem
+        val newItem = TodoItem(id = item.id, todoText = item.todoText, isChecked = checked)
+        viewModelScope.launch {
+            repository.updateTodoItem(newItem)
+        }
     }
 
     fun deleteItem(item: TodoItem){
-//        _todoList.remove(item)
+        viewModelScope.launch{
+            repository.deleteTodoItem(item)
+        }
     }
 
     fun addItem(text:String){
-//        val newItem = TodoItem(todoText = text)
-//        _todoList.add(newItem)
+        val newItem = TodoItem(todoText = text)
+        viewModelScope.launch {
+            repository.insertTodoItem(newItem)
+        }
     }
 
 }

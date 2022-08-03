@@ -10,6 +10,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -23,15 +24,19 @@ import com.example.todoapp.ui.theme.ToDoAppTheme
 @Composable
 fun MainScreen(viewModel: TodoViewModel){
     Column {
+        val todoList = viewModel.todoList.observeAsState()
+
         AddTodoScreen(
             onclick = { text -> viewModel.addItem(text)}
         )
 
-        TodoScreen(
-            list = viewModel.todoList,
-            checkedChange = { item, checked -> viewModel.changeIsChecked(item, checked)},
-            deleteClicked = {item -> viewModel.deleteItem(item)}
-        )
+        todoList.value?.let {
+            TodoScreen(
+                list = it ,
+                checkedChange = { item, checked -> viewModel.changeIsChecked(item, checked)},
+                deleteClicked = {item -> viewModel.deleteItem(item)}
+            )
+        }
     }
 }
 
@@ -72,7 +77,7 @@ fun AddTodoScreenPreview(){
     }
 }
 
-//item keyをidに変更予定
+
 @Composable
 fun TodoScreen(
     list:List<TodoItem>,
@@ -80,7 +85,7 @@ fun TodoScreen(
     deleteClicked: (TodoItem) -> Unit
 ) {
     LazyColumn(){
-        items(items = list, key = {item -> item.todoText }){ item ->
+        items(items = list, key = {item -> item.id }){ item ->
             TodoItemView(
                 todoText = item.todoText,
                 todoChecked = item.isChecked,

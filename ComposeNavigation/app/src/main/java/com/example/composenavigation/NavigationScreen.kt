@@ -3,28 +3,49 @@ package com.example.composenavigation
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Button
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 
 @Composable
 fun NavigationScreen(){
     val navController = rememberNavController()
 
+    val backStackEntry by navController.currentBackStackEntryAsState()
+
+    val navigationIcon: (@Composable () -> Unit)? =
+        if (backStackEntry?.destination?.route != "home") {
+            {
+                IconButton(onClick = {
+                    navController.popBackStack()
+                }) {
+                    Icon(
+                        imageVector = Icons.Outlined.ArrowBack,
+                        contentDescription = "Back"
+                    )
+                }
+            }
+        } else {
+            null
+        }
+
+
     Scaffold(
         topBar = {
-            TopAppBar { 
-                Text(text = stringResource(id = R.string.app_name))
-            }
+            TopAppBar(
+                title = { Text(text = stringResource(id = R.string.app_name))},
+                navigationIcon = navigationIcon
+            )
         }
     ) { innerPadding ->
         NavHost(

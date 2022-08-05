@@ -1,21 +1,24 @@
 package com.example.composenavigation
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBack
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 
 @Composable
 fun NavigationScreen(){
@@ -56,8 +59,11 @@ fun NavigationScreen(){
             composable("home"){
                 HomeScreen(navController = navController)
             }
-            composable("next"){
-                NextScreen()
+            composable(
+                "next/{text}",
+                arguments = listOf(navArgument("text"){ type = NavType.StringType })
+            ){ 
+                NextScreen(it.arguments?.getString("text").toString())
             }
         }
     }
@@ -67,23 +73,36 @@ fun NavigationScreen(){
 fun HomeScreen(
     navController: NavController
 ){
+    var name by remember { mutableStateOf("")}
+
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(text = "Welcome Home!")
-        Button(onClick = { navController.navigate("next") }) {
+
+        Spacer(modifier = Modifier.padding(16.dp))
+        
+        OutlinedTextField(
+            value = name,
+            onValueChange = {name = it},
+            label = { Text(text = "what your name?") }
+        )
+        Button(onClick = { navController.navigate("next/$name") }) {
             Text(text = "Next")
         }
     }
 }
 
 @Composable
-fun NextScreen(){
+fun NextScreen(text:String){
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize()
+            .padding(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "Next Screen")
+        Text(text = "Hello, $text")
     }
 }

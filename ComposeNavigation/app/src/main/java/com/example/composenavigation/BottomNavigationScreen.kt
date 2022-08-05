@@ -6,9 +6,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -34,10 +37,14 @@ fun ThirdScreen(){
     Text(text = "third screen")
 }
 
-sealed class Screen(val route: String, @StringRes val resourceId: Int){
-    object First : Screen("first", R.string.first_screen)
-    object Second : Screen("second", R.string.second_screen)
-    object Third : Screen("third", R.string.third_screen)
+sealed class Screen(
+    val route: String,
+    @StringRes val resourceId: Int,
+    val icon: ImageVector
+){
+    object First : Screen("first", R.string.first_screen, Icons.Filled.Home)
+    object Second : Screen("second", R.string.second_screen, Icons.Filled.Favorite)
+    object Third : Screen("third", R.string.third_screen, Icons.Filled.Settings)
 }
 
 val items = listOf(Screen.First, Screen.Second, Screen.Third)
@@ -53,7 +60,7 @@ fun BottomNavigationScreen(){
                 val currentDestination = navBackStackEntry?.destination
                 items.forEach { screen ->
                     BottomNavigationItem(
-                        icon = { Icon(Icons.Filled.Favorite, contentDescription = null) },
+                        icon = { Icon(screen.icon, contentDescription = null) },
                         label = { Text(stringResource(screen.resourceId)) },
                         selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                         onClick = {

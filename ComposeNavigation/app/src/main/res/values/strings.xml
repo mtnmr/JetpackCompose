@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">ComposeNavigation</string>
+
+    <string name="first_screen">First</string>
+    <string name="second_screen">Second</string>
+    <string name="third_screen">Third</string>
+
 </resources>

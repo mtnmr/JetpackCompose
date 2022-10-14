@@ -70,4 +70,6 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.1'
 
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
+
+    implementation "androidx.compose.material:material-icons-extended:$compose_version"
 }

@@ -13,3 +13,8 @@ class CountViewModel:ViewModel() {
         _count.value = _count.value?.plus(1)
     }
 }
+
+class SampleViewModel() : ViewModel(){
+    private var _sampleData = MutableLiveData(0)
+    val sampleData : LiveData<Int> = _sampleData
+}

@@ -52,3 +52,15 @@ fun CounterScreenPreview(){
         }
     }
 }
+
+
+@Composable
+fun SampleScreen(
+    viewModel: SampleViewModel = viewModel()
+){
+    val data by viewModel.sampleData.observeAsState()
+
+    data?.let {
+        Text(text = "$data")
+    }
+}

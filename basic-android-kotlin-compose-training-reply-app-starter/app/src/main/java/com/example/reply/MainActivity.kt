@@ -27,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.reply.ui.ReplyApp
 import com.example.reply.ui.theme.ReplyTheme
+import javax.sql.ConnectionPoolDataSource
 
 /**
  * Activity for Reply app
@@ -53,6 +54,26 @@ fun ReplyAppPreview() {
     ReplyTheme {
         ReplyApp(
             windowSize = WindowWidthSizeClass.Compact
+        )
+    }
+}
+
+@Preview(showBackground = true, widthDp = 700)
+@Composable
+fun ReplyAppMediumPreview(){
+    ReplyTheme {
+        ReplyApp(
+            windowSize = WindowWidthSizeClass.Medium
+        )
+    }
+}
+
+@Preview(showBackground = true, widthDp = 1000)
+@Composable
+fun ReplyAppExpandedPreview(){
+    ReplyTheme {
+        ReplyApp(
+            windowSize = WindowWidthSizeClass.Expanded
         )
     }
 }
